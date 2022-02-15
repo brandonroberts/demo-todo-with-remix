@@ -1,11 +1,22 @@
 import { useState } from 'react';
 import api from '../api';
-import { ActionFunction, useFetcher } from 'remix';
+import { ActionFunction, redirect, useFetcher } from 'remix';
 import { Link } from 'react-router-dom';
+import { commitSession, getSession } from '~/sessions';
 
-export const action: ActionFunction = async ({ request: req }) => {
-  const form = await req.json();
-  console.log(form['jwt']);
+export const action: ActionFunction = async ({ request }: { request: any }) => {
+  const session = await getSession(request.headers.get('Cookie'));
+  const formData = await request.formData();
+  const jwt = formData.get('jwt');
+
+  session.set('jwt', jwt);
+ 
+  // Login succeeded, send them to the home page.
+  return redirect('/todos', {
+    headers: {
+      'Set-Cookie': await commitSession(session),
+    },
+  });
 };
 
 export default function Login() {
@@ -24,7 +35,9 @@ export default function Login() {
         { email, password, jwt },
         { method: 'post' }
       )
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

@@ -1,4 +1,5 @@
-import { LoaderFunction, useLoaderData, useNavigate } from 'remix';
+import { LoaderFunction, redirect, useLoaderData, useNavigate } from 'remix';
+import { getSession } from '~/sessions';
 import { github, twitter, appwrite, react } from '../icons';
 
 export type LinkItem = {
@@ -6,7 +7,15 @@ export type LinkItem = {
   icon: Function
 }
 
-export const loader: LoaderFunction = () => {
+export const loader: LoaderFunction = async({request}) => {
+  const session = await getSession(request.headers.get('Cookie'));
+
+  const jwt = session.get('jwt');
+
+  if (jwt) {
+    return redirect('/todos');
+  }
+
   const links = [
     {
       href: "http://github.com/appwrite/appwrite",

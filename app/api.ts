@@ -3,13 +3,21 @@ import { Appwrite } from 'appwrite';
 let api = {
   sdk: null,
 
+  configure(endpoint: string, projectId: string) {
+    if (api.sdk) {
+      (api.sdk as Appwrite).setEndpoint(endpoint);
+      (api.sdk as Appwrite).setProject(projectId);
+      return api.sdk;
+    }
+
+    return api.sdk as unknown as Appwrite;
+  },
+
   provider: () => {
     if (api.sdk) {
       return api.sdk;
     }
     let appwrite = new Appwrite();
-    appwrite.setEndpoint(process.env.APPWRITE_ENDPOINT as string);
-    appwrite.setProject(process.env.APPWRITE_PROJECT_ID as string);
     api.sdk = appwrite as any;
     return appwrite;
   },
