@@ -1,6 +1,6 @@
 import { LoaderFunction, redirect, useLoaderData, useNavigate } from 'remix';
 import { getSession } from '~/sessions';
-import { github, twitter, appwrite, react } from '../icons';
+import { github, twitter, appwrite } from '../icons';
 
 export type LinkItem = {
   href: string;
@@ -51,7 +51,7 @@ export default function Index() {
           <p className="my-8 text-xl md:text-2xl lg:text-3xl font-medium">
             {/* A Simple To-do App built with {appwrite(8)} Appwrite and {react(8)}{" "} */}
             {/* React */}
-            A Simple To-do App built with Appwrite and React
+            A Simple To-do App built with Appwrite and Remix
           </p>
           <button
             onClick={handleClick}
@@ -62,13 +62,15 @@ export default function Index() {
         </div>
       </section>
 
-      {/* <section className="absolute bottom-0 right-0 py-3 px-6 mr-8 mb-8 flex">
-        {links.map((item: LinkItem, index: number) => (
+      <section className="absolute bottom-0 right-0 py-3 px-6 mr-8 mb-8 flex">
+        {links.map(({ href, icon }) => ({ href, icon })).map((item: LinkItem, index: number) => (
           <div className="rounded-full mx-4 transition duration-200 ease-in-out transform hover:-translate-y-3 hover:scale-125 hover:shadow-4xl" key={index}>
-            <a href={item.href}>{item.icon}</a>
+            <a href={item.href}>
+              {/* {item.icon} */}
+            </a>
           </div>
         ))}
-      </section> */}
+      </section>
     </>
   );
 }

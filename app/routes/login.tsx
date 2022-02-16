@@ -29,10 +29,10 @@ export default function Login() {
 
     try {
       await api.createSession(email, password);
-      const jwt = (await api.provider().account.createJWT()).jwt;
+      const jwt = await api.createJWT();
 
       fetcher.submit(
-        { email, password, jwt },
+        { jwt },
         { method: 'post' }
       )
     } catch (e) {

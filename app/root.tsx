@@ -13,9 +13,6 @@ import styles from './styles.css';
 import api from './api';
 
 export const loader: LoaderFunction = async() => {
-  api.provider().setEndpoint(process.env.APPWRITE_ENDPOINT as string);
-  api.provider().setProject(process.env.APPWRITE_PROJECT_ID as string);
-
   return {
     ENV: {
       APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
@@ -25,7 +22,7 @@ export const loader: LoaderFunction = async() => {
 }
 
 export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
+  return { title: "Appwrite + Remix" };
 };
 
 export function links() {
@@ -34,8 +31,8 @@ export function links() {
 
 export default function App() {
   const data = useLoaderData();
-  api.provider().setEndpoint(data.ENV.APPWRITE_ENDPOINT);
-  api.provider().setProject(data.ENV.APPWRITE_PROJECT_ID);
+  api.provider(false).setEndpoint(data.ENV.APPWRITE_ENDPOINT);
+  api.provider(false).setProject(data.ENV.APPWRITE_PROJECT_ID);
 
   return (
     <html lang="en">
