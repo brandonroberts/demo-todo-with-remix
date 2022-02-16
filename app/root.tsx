@@ -6,27 +6,27 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData
-} from "remix";
-import type { MetaFunction } from "remix";
+  useLoaderData,
+} from 'remix';
+import type { MetaFunction } from 'remix';
 import styles from './styles.css';
 import api from './api';
 
-export const loader: LoaderFunction = async() => {
+export const loader: LoaderFunction = async () => {
   return {
     ENV: {
       APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT,
-      APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID
-    }
+      APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID,
+    },
   };
-}
+};
 
 export const meta: MetaFunction = () => {
-  return { title: "Appwrite + Remix" };
+  return { title: 'Appwrite + Remix' };
 };
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [{ rel: 'stylesheet', href: styles }];
 }
 
 export default function App() {
@@ -46,7 +46,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );

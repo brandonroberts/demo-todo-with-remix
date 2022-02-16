@@ -22,7 +22,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   api.setJWT(jwt.toString());
-  const account = await api.getAccount();
   const todos = await api.listDocuments('todos');
 
   return json({ todos: todos.documents });
