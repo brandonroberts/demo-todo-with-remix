@@ -21,6 +21,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect('/login');
   }
 
+  api.setJWT(jwt.toString());
+  const account = await api.getAccount();
   const todos = await api.listDocuments('todos');
 
   return json({ todos: todos.documents });
@@ -30,6 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = request.method.toLowerCase();
   const session = await getSession(request.headers.get('Cookie'));
   const jwt = session.get('jwt');
+  const userId = session.get('userId');
   const form = await request.formData();
   api.provider().setJWT(jwt.toString());
 
@@ -41,7 +44,12 @@ export const action: ActionFunction = async ({ request }) => {
         content,
         isComplete: false,
       };
-      await api.createDocument('todos', data, [], []);
+      await api.createDocument(
+        'todos',
+        data,
+        [`user:${userId}`],
+        [`user:${userId}`]
+      );
       break;
     }
 
@@ -49,7 +57,13 @@ export const action: ActionFunction = async ({ request }) => {
       const id = form.get('todoId') as string;
       const todo = JSON.parse(form.get('todo') as string);
 
-      await api.updateDocument('todos', id, todo, [], []);
+      await api.updateDocument(
+        'todos',
+        id,
+        todo,
+        [`user:${userId}`],
+        [`user:${userId}`]
+      );
       break;
     }
 

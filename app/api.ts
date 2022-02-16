@@ -14,7 +14,7 @@ let api = {
   },
 
   createAccount: (email: string, password: string, name: string) => {
-    return api.provider(false).account.create(email, password, name);
+    return api.provider(false).account.create('unique()', email, password, name);
   },
 
   getAccount: () => {
@@ -26,7 +26,7 @@ let api = {
   },
 
   setJWT: (jwt: string) => {
-    api.setJWT(jwt.toString());
+    api.provider().setJWT(jwt.toString())
   },
 
   createSession: (email: string, password: string) => {

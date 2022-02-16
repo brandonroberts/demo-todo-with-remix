@@ -8,7 +8,9 @@ export const action: ActionFunction = async ({ request }: { request: any }) => {
   const session = await getSession(request.headers.get('Cookie'));
   const formData = await request.formData();
   const jwt = formData.get('jwt');
+  const userId = formData.get('userId');
 
+  session.set('userId', userId);
   session.set('jwt', jwt);
  
   // Login succeeded, send them to the home page.
@@ -28,11 +30,11 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      await api.createSession(email, password);
+      const session = await api.createSession(email, password);
       const jwt = await api.createJWT();
-
+      
       fetcher.submit(
-        { jwt },
+        { userId: session.userId, jwt },
         { method: 'post' }
       )
     } catch (e) {
