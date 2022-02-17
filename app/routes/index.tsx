@@ -9,9 +9,7 @@ export type LinkItem = {
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get('Cookie'));
 
-  const jwt = session.get('jwt');
-
-  if (jwt) {
+  if (session.has('userId')) {
     return redirect('/todos');
   }
 

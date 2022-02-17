@@ -1,4 +1,5 @@
-import { createCookieSessionStorage } from 'remix';
+import { createCookieSessionStorage, redirect } from 'remix';
+import api from './api';
 
 const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
@@ -8,7 +9,7 @@ const { getSession, commitSession, destroySession } =
 
       // all of these are optional
       domain: "localhost",
-      expires: new Date(Date.now() + 60_000),
+      expires: new Date(Date.now() + 15_000),
       httpOnly: true,
       maxAge: 60,
       path: "/",
@@ -17,5 +18,18 @@ const { getSession, commitSession, destroySession } =
       secure: true
     }
   });
+
+export async function checkSession(request: Request) {
+  const session = await getSession(request.headers.get('Cookie'));
+  
+  if (!session.has('userId')) {
+    // @ts-ignore
+    throw new redirect('/login');
+  }
+
+  api.provider().setJWT(session.get('jwt').toString());
+
+  return session;
+}
 
 export { getSession, commitSession, destroySession };

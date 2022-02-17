@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import api from '../api';
 import { ActionFunction, redirect, useFetcher } from 'remix';
 import { Link } from 'react-router-dom';
@@ -26,7 +26,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const fetcher = useFetcher();
 
-  const handleLogin = async (e: any) => {
+  const handleLogin = async (e: FormEvent<EventTarget>) => {
     e.preventDefault();
 
     try {

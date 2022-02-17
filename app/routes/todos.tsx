@@ -11,30 +11,23 @@ import {
 import { Models } from 'appwrite';
 import api from '~/api';
 import TodoItem from '~/components/todo-item';
-import { getSession } from '~/sessions';
+import { checkSession } from '~/sessions';
+import { FormEvent } from 'react';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const session = await getSession(request.headers.get('Cookie'));
-  const jwt = session.get('jwt');
+  await checkSession(request);
 
-  if (!jwt) {
-    return redirect('/login');
-  }
-
-  api.setJWT(jwt.toString());
   const todos = await api.listDocuments('todos');
 
   return json({ todos: todos.documents });
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const session = await checkSession(request);
   const action = request.method.toLowerCase();
-  const session = await getSession(request.headers.get('Cookie'));
-  const jwt = session.get('jwt');
   const userId = session.get('userId');
   const form = await request.formData();
-  api.provider().setJWT(jwt.toString());
-
+  
   switch (action) {
     case 'post': {
       const content = form.get('content');
@@ -83,7 +76,7 @@ export default function Todos() {
   const navigate = useNavigate();
 
   function handleComplete(
-    e: any,
+    e: FormEvent<EventTarget>,
     todo: Models.Document & { isComplete: boolean }
   ) {
     e.preventDefault();
@@ -97,7 +90,7 @@ export default function Todos() {
     );
   }
 
-  function handleDelete(e: any, item: Models.Document) {
+  function handleDelete(e: FormEvent<EventTarget>, item: Models.Document) {
     e.preventDefault();
 
     fetcher.submit({ todoId: item.$id }, { method: 'delete' });
