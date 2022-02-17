@@ -4,15 +4,17 @@ import {
   json,
   LoaderFunction,
   redirect,
+  useActionData,
   useFetcher,
   useLoaderData,
   useNavigate,
 } from 'remix';
+import { FormEvent } from 'react';
 import { Models } from 'appwrite';
 import api from '~/api';
 import TodoItem from '~/components/todo-item';
+import Alert from '~/components/alert';
 import { checkSession } from '~/sessions';
-import { FormEvent } from 'react';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await checkSession(request);
@@ -27,6 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = request.method.toLowerCase();
   const userId = session.get('userId');
   const form = await request.formData();
+  let error: string | null = null;
   
   switch (action) {
     case 'post': {
@@ -36,12 +39,16 @@ export const action: ActionFunction = async ({ request }) => {
         content,
         isComplete: false,
       };
-      await api.createDocument(
-        'todos',
-        data,
-        [`user:${userId}`],
-        [`user:${userId}`]
-      );
+      try {
+        await api.createDocument(
+          'todos',
+          data,
+          [`user:${userId}`],
+          [`user:${userId}`]
+        );
+      } catch(e) {
+        error = 'Unable to create todo';
+      }
       break;
     }
 
@@ -49,22 +56,34 @@ export const action: ActionFunction = async ({ request }) => {
       const id = form.get('todoId') as string;
       const todo = JSON.parse(form.get('todo') as string);
 
-      await api.updateDocument(
-        'todos',
-        id,
-        todo,
-        [`user:${userId}`],
-        [`user:${userId}`]
-      );
+      try {
+        await api.updateDocument(
+          'todos',
+          id,
+          todo,
+          [`user:${userId}`],
+          [`user:${userId}`]
+        );
+      } catch(e) {
+        error = 'Unble to update todo';
+      }
       break;
     }
 
     case 'delete': {
       const id = form.get('todoId') as string;
 
-      await api.deleteDocument('todos', id);
+      try {
+        await api.deleteDocument('todos', id);
+      } catch(e) {
+        error = 'Unable to delete todo';
+      }
       break;
     }
+  }
+
+  if (error) {
+    return error;
   }
 
   return redirect('/todos');
@@ -72,6 +91,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Todos() {
   const data = useLoaderData<{ todos: Models.Document[] }>();
+  const error = useActionData<string>();
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
@@ -105,7 +125,7 @@ export default function Todos() {
   return (
     <>
       <section className="container h-screen max-h-screen px-3 max-w-xl mx-auto flex flex-col">
-        {/* {isError && <Alert color="red" message="Something went wrong..." />} */}
+        {error && <Alert message="Something went wrong..." />}
         <div className="my-auto p-16 rounded-lg text-center">
           <div className="font-bold text-3xl md:text-5xl lg:text-6xl">
             📝 <br /> &nbsp; toTooooDoooos
